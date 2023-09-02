@@ -3,6 +3,9 @@ const { Expo } = require('expo-server-sdk');
 const { exec } = require('child_process');
 const app = express();
 const expo = new Expo();
+// Parse JSON requests
+app.use(bodyParser.json());
+
 
 // Endpoint to send push notifications
 app.post('/send-notification', async (req, res) => {
