@@ -1,6 +1,7 @@
 const express = require('express');
 const { Expo } = require('expo-server-sdk');
 const { exec } = require('child_process');
+const bodyParser = require('body-parser');
 const app = express();
 const expo = new Expo();
 // Parse JSON requests
