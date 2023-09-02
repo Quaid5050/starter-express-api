@@ -1,6 +1,6 @@
 const express = require('express');
 const { Expo } = require('expo-server-sdk');
-
+const { exec } = require('child_process');
 const app = express();
 const expo = new Expo();
 
@@ -61,6 +61,48 @@ app.get('/send-notification/:token', async (req, res) => {
         res.status(500).json({ success: false, error: 'Failed to send push notifications' });
     }
 });
+
+
+
+
+
+
+//Load testing
+function executeAutocannon(command) {
+    return new Promise((resolve, reject) => {
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve({ stdout, stderr });
+        }
+      });
+    });
+  }
+
+
+// Define a route for running autocannon
+app.post('/run-autocannon', async (req, res) => {
+     const { url, connections, duration, pipelining } = req.body;
+    if (!url) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+  
+    const autocannonCommand = `autocannon -c ${connections || 1000} -d ${duration || 20} -p ${pipelining || 10} ${url}`;
+  
+    try {
+      const { stdout, stderr } = await executeAutocannon(autocannonCommand);
+      res.json({
+        stdout: stdout,
+        stderr: stderr,
+      });
+    } catch (error) {
+      res.status(500).json({ error: `Error: ${error.message}` });
+    }
+});
+
+
+
 
 // Start the server
 app.listen(3000, () => {
